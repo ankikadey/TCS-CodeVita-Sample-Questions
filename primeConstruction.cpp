@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <vector>
 using namespace std;
+long long ul = 1000000;
 
 bool is_prime(int num)
 {
@@ -22,7 +23,7 @@ void smallest_prime(vector<int> in_list)
 {
     int res = -1;
     int q = *min_element(in_list.begin(), in_list.end());
-    for (int p = q; p < 1000000; p++) //here the limit is 10^6 as 10^10 caused timed out issue
+    for (int p = q; p < ul; p++)
     {
         bool isvalid = true;
         for (auto num : in_list)
