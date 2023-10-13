@@ -32,4 +32,5 @@
 *.app
 
 #for .gitignore
-*.gitignore
+.gitignore
+.gitattributes
