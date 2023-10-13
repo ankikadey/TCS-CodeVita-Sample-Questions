@@ -157,3 +157,101 @@ After event of marriage between Robert and Cersei, Baratheon and Lannister becom
 After death of Tywin, Robert has been chosen leader although age of Jamie and Robert was same. Robert was chosen the leader since Baratheon family has more members than Lannister family. This can be seen when we printed Jamie's details.
 
 Five years after Joffrey's birth and post the divorce of Robert and Cersei, relations between Lannister and Baratheon family have broken and Jamie became leader of Lannister family as he was the oldest. Joffrey stays with father's family name. As Tywin is dead his details have been not printed.*/
+#include <iostream>
+#include <vector>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+struct Person {
+    string firstName;
+    string familyName;
+    string birthFamilyName;
+    string gender;
+    string fatherName;
+    string spouseName;
+    int age;
+    Person(string firstName, string familyName, string birthFamilyName, string gender, string fatherName, string spouseName, int age) : firstName(firstName), familyName(familyName), birthFamilyName(birthFamilyName), gender(gender), fatherName(fatherName), spouseName(spouseName), age(age) {}
+};
+
+map<string, Person> people;
+
+void printPerson(const Person &p, const string &leaderName) {
+    cout << p.firstName << " " << p.familyName << " " << p.birthFamilyName << " " << p.gender << " " << p.fatherName << " " << p.spouseName << " " << p.age << " " << leaderName << endl;
+}
+
+bool comparePeople(const pair<string, Person> &a, const pair<string, Person> &b) {
+    if (a.second.familyName == b.second.familyName) {
+        if (a.second.age == b.second.age) {
+            return a.first < b.first;
+        }
+        return a.second.age > b.second.age;
+    }
+    return a.second.familyName < b.second.familyName;
+}
+
+int main() {
+    int N;
+    cin >> N;
+    for (int i = 0; i < N; i++) {
+        string firstName, familyName, birthFamilyName, gender, fatherName, spouseName;
+        int age;
+        cin >> firstName >> familyName >> birthFamilyName >> gender >> fatherName >> spouseName >> age;
+        people[firstName] = Person(firstName, familyName, birthFamilyName, gender, fatherName, spouseName, age);
+    }
+
+    int E;
+    cin >> E;
+    for (int i = 0; i < E; i++) {
+        string event;
+        cin >> event;
+        if (event == "PA") {
+            vector<pair<string, Person>> alivePeople;
+            for (auto &p : people) {
+                if (p.second.spouseName != "NA") {
+                    p.second.familyName = people[p.second.spouseName].familyName;
+                }
+                if (p.second.gender == "Female" && p.second.spouseName == "NA") {
+                    p.second.spouseName = p.second.familyName;
+                }
+                if (p.second.fatherName == "NA") {
+                    alivePeople.push_back(p);
+                }
+            }
+            sort(alivePeople.begin(), alivePeople.end(), comparePeople);
+            for (auto &p : alivePeople) {
+                printPerson(p.second, p.second.familyName);
+            }
+        } else if (event == "PO") {
+            string personName;
+            cin >> personName;
+            printPerson(people[personName], people[personName].familyName);
+        } else if (event == "MA") {
+            string p1, p2;
+            cin >> p1 >> p2;
+            people[p1].spouseName = p2;
+            people[p2].spouseName = p1;
+        } else if (event == "DI") {
+            string p1, p2;
+            cin >> p1 >> p2;
+            people[p1].spouseName = "NA";
+            people[p2].spouseName = "NA";
+        } else if (event == "BI") {
+            string name, gender, father, mother;
+            cin >> name >> gender >> father >> mother;
+            people[name] = Person(name, father, father, gender, father, mother, 0);
+        } else if (event == "DE") {
+            string p;
+            cin >> p;
+            people.erase(p);
+        } else if (event == "YP") {
+            int years;
+            cin >> years;
+            for (auto &p : people) {
+                p.second.age += years;
+            }
+        }
+    }
+
+    return 0;
+}
