@@ -1,4 +1,6 @@
-/*The people of Kingdoms of Westeros are very organized. They are very devoted to their leader and cannot live without a leader even for a single day. Marriages, divorces, births, and deaths are everyday things in Westeros and because of these events people of Westeros need to spend their time on choosing the leader. People badly need a programme to find the new leader in case of these events. The criteria to choose the leader is as below.
+/*TheRelationshipMarks: 200
+Problem Description
+The people of Kingdoms of Westeros are very organized. They are very devoted to their leader and cannot live without a leader even for a single day. Marriages, divorces, births, and deaths are everyday things in Westeros and because of these events people of Westeros need to spend their time on choosing the leader. People badly need a programme to find the new leader in case of these events. The criteria to choose the leader is as below.
 
 The leader of the family will be the oldest person. [Age of each member in a particular family will be different]. For simplicity, consider surname as family name. In the input though family name will be mentioned explicitly.
 2 or more families are said to be related if a boy from one family has married a girl in the other family. Thus, related families will have a single leader who will be the senior most person from the newly formed cluster of families. If 2 members from this cluster have the same age, then the person with larger family will be the leader of the new cluster. If that also results in a tie, then the person whose name comes first in lexicographical order will be the leader
@@ -157,6 +159,7 @@ After event of marriage between Robert and Cersei, Baratheon and Lannister becom
 After death of Tywin, Robert has been chosen leader although age of Jamie and Robert was same. Robert was chosen the leader since Baratheon family has more members than Lannister family. This can be seen when we printed Jamie's details.
 
 Five years after Joffrey's birth and post the divorce of Robert and Cersei, relations between Lannister and Baratheon family have broken and Jamie became leader of Lannister family as he was the oldest. Joffrey stays with father's family name. As Tywin is dead his details have been not printed.*/
+
 #include <iostream>
 #include <vector>
 #include <map>
@@ -171,13 +174,30 @@ struct Person {
     string fatherName;
     string spouseName;
     int age;
-    Person(string firstName, string familyName, string birthFamilyName, string gender, string fatherName, string spouseName, int age) : firstName(firstName), familyName(familyName), birthFamilyName(birthFamilyName), gender(gender), fatherName(fatherName), spouseName(spouseName), age(age) {}
+
+    Person() {}
+
+    void setPerson(string firstName, string familyName, string birthFamilyName, string gender, string fatherName, string spouseName, int age) {
+        this->firstName = firstName;
+        this->familyName = familyName;
+        this->birthFamilyName = birthFamilyName;
+        this->gender = gender;
+        this->fatherName = fatherName;
+        this->spouseName = spouseName;
+        this->age = age;
+    }
 };
 
 map<string, Person> people;
 
-void printPerson(const Person &p, const string &leaderName) {
-    cout << p.firstName << " " << p.familyName << " " << p.birthFamilyName << " " << p.gender << " " << p.fatherName << " " << p.spouseName << " " << p.age << " " << leaderName << endl;
+void printPerson(const Person &p) {
+    cout << p.firstName << " " << p.familyName << " " << p.birthFamilyName << " " << p.gender << " " << p.fatherName << " " << p.spouseName << " " << p.age << " ";
+    auto it = people.find(p.familyName);
+    if (it != people.end()) {
+        cout << it->second.firstName << endl;
+    } else {
+        cout << p.familyName << endl;
+    }
 }
 
 bool comparePeople(const pair<string, Person> &a, const pair<string, Person> &b) {
@@ -197,7 +217,9 @@ int main() {
         string firstName, familyName, birthFamilyName, gender, fatherName, spouseName;
         int age;
         cin >> firstName >> familyName >> birthFamilyName >> gender >> fatherName >> spouseName >> age;
-        people[firstName] = Person(firstName, familyName, birthFamilyName, gender, fatherName, spouseName, age);
+        Person person;
+        person.setPerson(firstName, familyName, birthFamilyName, gender, fatherName, spouseName, age);
+        people[firstName] = person;
     }
 
     int E;
@@ -220,17 +242,18 @@ int main() {
             }
             sort(alivePeople.begin(), alivePeople.end(), comparePeople);
             for (auto &p : alivePeople) {
-                printPerson(p.second, p.second.familyName);
+                printPerson(p.second);
             }
         } else if (event == "PO") {
             string personName;
             cin >> personName;
-            printPerson(people[personName], people[personName].familyName);
+            printPerson(people[personName]);
         } else if (event == "MA") {
             string p1, p2;
             cin >> p1 >> p2;
             people[p1].spouseName = p2;
             people[p2].spouseName = p1;
+            people[p1].familyName = people[p2].familyName;
         } else if (event == "DI") {
             string p1, p2;
             cin >> p1 >> p2;
@@ -239,11 +262,18 @@ int main() {
         } else if (event == "BI") {
             string name, gender, father, mother;
             cin >> name >> gender >> father >> mother;
-            people[name] = Person(name, father, father, gender, father, mother, 0);
+            Person person;
+            person.setPerson(name, father, father, gender, father, mother, 0);
+            people[name] = person;
         } else if (event == "DE") {
             string p;
             cin >> p;
             people.erase(p);
+            for (auto &person : people) {
+                if (person.second.spouseName == p) {
+                    person.second.spouseName = "NA";
+                }
+            }
         } else if (event == "YP") {
             int years;
             cin >> years;
