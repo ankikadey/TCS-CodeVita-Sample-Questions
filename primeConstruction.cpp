@@ -1,49 +1,57 @@
 #include <iostream>
-#include <vector>
 #include <algorithm>
-#include <cmath>
+#include <vector>
 using namespace std;
 
-bool is_prime(long long num) {
-    if (num <= 1) {
+bool is_prime(int num)
+{
+    if (num <= 1)
         return false;
-    }
-    for (long long i = 2; i <= sqrt(num); i++) {
-        if (num % i == 0) {
+    if (num == 2)
+        return false;
+    if (num % 2 == 0) return false;
+    for (int i = 3; i * i <= num; i += 2)
+    {
+        if (num % i == 0)
             return false;
-        }
     }
     return true;
 }
 
-long long compute_smallest_prime(vector<long long> input_list) {
-    long long q = *min_element(input_list.begin(), input_list.end());
-    for (long long p = q + 1;; p++) {
-        bool flag = true;
-        for (auto num : input_list) {
-            if (num != q && p % num != q) {
-                flag = false;
+void smallest_prime(vector<int> in_list)
+{
+    int res = -1;
+    int q = *min_element(in_list.begin(), in_list.end());
+    for (int p = q; p < 1000000; p++) //here the limit is 10^6 as 10^10 caused timed out issue
+    {
+        bool isvalid = true;
+        for (auto num : in_list)
+        {
+            if (num != q && p % num != q)
+            {
+                isvalid = false;
                 break;
             }
         }
-        if (flag && is_prime(p)) {
-            return p;
+        if (isvalid && is_prime(p))
+        {
+            cout << p << endl;
+            return;
         }
     }
-    return -1;
+    
+    cout << "None" << endl;
+
 }
 
-int main() {
-    vector<long long> input_list;
-    long long input;
-    while (cin >> input) {
-        input_list.push_back(input);
+int main(int argc, char const *argv[])
+{
+    vector<int> in_list;
+    int input;
+    while (cin >> input)
+    {
+        in_list.push_back(input);
     }
-    long long output = compute_smallest_prime(input_list);
-    if (output == -1) {
-        cout << "None" << endl;
-    } else {
-        cout << output << endl;
-    }
+    smallest_prime(in_list);
     return 0;
 }
