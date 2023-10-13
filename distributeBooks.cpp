@@ -51,24 +51,66 @@ Output
 To find the number of possible exchanges, we can use this formula,
 and then apply modulo 1000000007 to the result*/
 
+// #include <iostream>
+// #include <vector>
+// using namespace std;
+
+// const int MOD = 1000000007;
+
+// int distributeBooks(int n)
+// {
+//     if (n == 0)
+//     {
+//         return 1;
+//     }
+//     if (n == 1)
+//     {
+//         return 0;
+//     }
+//     return (int)(((long long)(n - 1) * (distributeBooks(n - 1) + distributeBooks(n - 2))) % MOD);
+// }
+
+// #include <iostream>
+// using namespace std;
+
+// const int MOD = 1000000007;
+
+// int distributeBooks(int n)
+// {
+//     if (n == 0) {
+//         return 1;
+//     }
+//     if (n == 1) {
+//         return 0;
+//     }
+//     return (int)(((long long)(n - 1) * (distributeBooks(n - 1) + distributeBooks(n - 2))) % MOD);
+// }
+
 #include <iostream>
 #include <vector>
 using namespace std;
 
 const int MOD = 1000000007;
 
-int distributeBooks(int n)
-{
-    if (n == 0)
-    {
+int distributeBooks(int n) {
+    if (n == 0) {
         return 1;
     }
-    if (n == 1)
-    {
+    if (n == 1) {
         return 0;
     }
-    return (int)(((long long)(n - 1) * (distributeBooks(n - 1) + distributeBooks(n - 2))) % MOD);
+
+    vector<int> dp(n + 1);
+    dp[0] = 1;
+    dp[1] = 0;
+
+    for (int i = 2; i <= n; i++) {
+        dp[i] = (int)(((long long)(i - 1) * (dp[i - 1] + dp[i - 2])) % MOD);
+    }
+
+    return dp[n]; //more optimized approach
 }
+
 
 int main() {
     int T;
